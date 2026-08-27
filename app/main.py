@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Response, status
 from sqlmodel import SQLModel
-from starlette import status
 from app.routers import ticket_router
 from app.database import engine
 

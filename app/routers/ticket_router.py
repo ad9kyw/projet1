@@ -29,7 +29,10 @@ def delete_ticket_id(ticket_id: int, repository: TicketRepository = Depends(get_
 @router.get("/{ticket_id}", response_model=Ticket | None, status_code=status.HTTP_200_OK)
 def get_ticket(ticket_id: int, repository: TicketRepository = Depends(get_ticket_repository)):
     """endpoint to get a ticket"""
-    return repository.get_by_id(ticket_id)
+    ticket: Ticket | None = repository.get_by_id(ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return ticket
 
 @router.get("/", response_model=list[Ticket], status_code=status.HTTP_200_OK)
 def get_tickets(repository: TicketRepository = Depends(get_ticket_repository)):

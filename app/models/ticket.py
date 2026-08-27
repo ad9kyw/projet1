@@ -9,5 +9,10 @@ class Ticket(SQLModel, table=True):
     content: str
     category: TicketCategory
     status: TicketStatus = Field(default=TicketStatus.ACTIVE)
-    priority: int
+    priority: int = Field(default=5)
     created_at: datetime = Field(default_factory=datetime.now)
+
+class TicketCreate(SQLModel):
+    """represent a ticket at creation"""
+    content: str
+    category: TicketCategory

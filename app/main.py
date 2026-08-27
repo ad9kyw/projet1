@@ -1,7 +1,16 @@
 from fastapi import FastAPI, Response, status
+from sqlmodel import SQLModel
 from starlette import status
+from app.routers import ticket_router
+from app.database import engine
 
-app = FastAPI()
+app = FastAPI(title="Ticket API")
+
+@app.on_event("startup")
+def on_startup():
+    """create the tables """
+    SQLModel.metadata.create_all(engine)
+app.include_router(ticket_router.router)
 
 @app.get("/")
 async def root(response: Response):

@@ -25,11 +25,13 @@ class TicketRepository:
 
     def list_all(self) -> list[Ticket]:
         """lists all tickets"""
-        return self.session.exec(select(Ticket)).all()
+        return list(self.session.exec(select(Ticket)).all())
 
-    def delete_by_id(self, ticket_id: int) -> None:
+    def delete_by_id(self, ticket_id: int) -> Ticket | None:
         """deletes a ticket by its id"""
         ticket: Ticket | None = self.get_by_id(ticket_id)
         if ticket:
             self.session.delete(ticket)
             self.session.commit()
+            return ticket
+        return None

@@ -1,6 +1,6 @@
 from starlette import status
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.models.ticket import Ticket, TicketCreate
 from app.repositories.ticket_repository import TicketRepository
@@ -16,17 +16,20 @@ def create_ticket(data: TicketCreate, repository: TicketRepository = Depends(get
     if ticket:
         return ticket
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="something went wrong")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_ticket_id(id: int, repository: TicketRepository = Depends(get_ticket_repository)):
+
+@router.delete("/{ticket_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_ticket_id(ticket_id: int, repository: TicketRepository = Depends(get_ticket_repository)):
     """endpoint to delete a ticket"""
-    repository.delete_by_id(id)
+    ticket = repository.delete_by_id(ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-@router.get("/{id}", response_model=Ticket | None, status_code=status.HTTP_200_OK)
-def get_ticket(id: int, repository: TicketRepository = Depends(get_ticket_repository)):
+@router.get("/{ticket_id}", response_model=Ticket | None, status_code=status.HTTP_200_OK)
+def get_ticket(ticket_id: int, repository: TicketRepository = Depends(get_ticket_repository)):
     """endpoint to get a ticket"""
-    return repository.get_by_id(id)
+    return repository.get_by_id(ticket_id)
 
 @router.get("/", response_model=list[Ticket], status_code=status.HTTP_200_OK)
 def get_tickets(repository: TicketRepository = Depends(get_ticket_repository)):

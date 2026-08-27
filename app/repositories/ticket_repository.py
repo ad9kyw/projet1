@@ -10,7 +10,11 @@ class TicketRepository:
     def create(self, ticket: Ticket) -> Ticket:
         """creates a new ticket"""
         self.session.add(ticket)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except :
+            self.session.rollback()
+            return None
         self.session.refresh(ticket)
         return ticket
 
@@ -21,3 +25,10 @@ class TicketRepository:
     def list_all(self) -> list[Ticket]:
         """lists all tickets"""
         return list(self.session.query(Ticket).all())
+
+    def delete_by_id(self, ticket_id: int) -> None:
+        """deletes a ticket by its id"""
+        ticket: Ticket | None = self.get_by_id(ticket_id)
+        if ticket:
+            self.session.delete(ticket)
+            self.session.commit()

@@ -13,3 +13,8 @@ def create_ticket(data: TicketCreate, repository: TicketRepository = Depends(get
     """endpoint to create a new ticket"""
     ticket: Ticket = Ticket(**data.dict())
     return repository.create(ticket)
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_ticket_id(id: int, repository: TicketRepository = Depends(get_ticket_repository)):
+    """endpoint to delete a ticket"""
+    repository.delete_by_id(id)
